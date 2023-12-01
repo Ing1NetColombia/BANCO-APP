@@ -1,0 +1,60 @@
+  
+
+/* menú principal*/
+#menu_ppal a {
+    font-size: 18px;
+}
+
+#menu_ppal button {
+    font-size: 18px;
+}
+
+/* tamaño máximo para las imagenes del carrusel:*/
+.carousel-inner {
+    max-height: 30rem;
+}
+
+/* Menú Principal sistema*/
+span {
+        color: white;
+        padding-left: 2px;
+    }
+
+span:hover {
+    color: lightgrey
+}
+
+i {
+    color: goldenrod;
+}
+
+i:hover {
+    color: white;
+}
+
+
+/* tarjetas */
+  ._tarjeta_ini {
+      width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  ._tarjeta_ini img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+  }
+  ._tarjeta_ini h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+  }
+  ._tarjeta_ini p {
+      font-size: 16px;
+      color: #555;
+  }
+
+  i {
+    color: goldenrod;
+  }
