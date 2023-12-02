@@ -45,12 +45,16 @@
                         <input type="text" class="form-control" id="nombreSelected1" name="nombreSelected1" disabled="true" style="display: none;" required />
                     </div>
                     <div class="mb-3">
-                        <label for="idProducto" class="form-label">Código de producto</label>
-                        <input type="text" class="form-control" id="idProducto" name="codigoProducto"  required />
+                        <label for="tipoProducto" class="form-label">Tipo de producto</label>
+                        <select class="form-select" aria-label="Default select example" id="selectTipoProducto">
+                            <option selected>Seleccione Tipo de Producto...</option>
+                        </select>
+                        <input type="text" class="form-control" id="tipoProducto" name="tipoProducto" disabled="true" style="display: none;" required />
+                        <input type="text" class="form-control" id="nombreTipoProducto" name="nombreTipoProducto" disabled="true" style="display: none;" required />
                     </div>
                     <div class="mb-3">
-                        <label for="tipoProducto" class="form-label">Tipo de producto</label>
-                        <input type="text" class="form-control" id="tipoProducto" name="tipoProducto" required />
+                        <label for="idProducto" class="form-label">Código de producto</label>
+                        <input type="text" class="form-control" id="idProducto" name="codigoProducto" maxlength="8" required />
                     </div>
                     <div class="mb-3">
                         <label for="numeroProducto" class="form-label">No. de producto</label>
@@ -70,8 +74,9 @@
                         <tr>
                             <th>Nit</th>
                             <th>Nombre Cliente</th>
-                            <th>Id.Producto</th>
                             <th>Tipo producto</th>
+                            <th>Nombre Tipo Producto</th>
+                            <th>Id.Producto</th>
                             <th>No. de producto</th>
                             <th style="width:180px;" class="text-center">Acciones</th>
                         </tr>

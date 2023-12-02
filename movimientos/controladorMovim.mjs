@@ -1,6 +1,7 @@
 import Movimiento from "./movimientos.js";
 import Cliente from "../clientes/clientes.js";
 import Producto from "../productos/productos.js";
+import tipoProducto from "../tiposProducto/tiposProducto.js";
 
 //Variables:
 //Indice elemento a modificar:
@@ -188,6 +189,8 @@ function grillaMovimientos(){
     let cadenaHtml = ""
     let columnaNombre= ""
     let columnaNumProducto= ""
+    let columnaTipoProducto= ""
+    let columnaNombreTipoProducto= ""
 
     a_movimientos.forEach(function(element, index) {
         // index: indice del array
@@ -195,12 +198,19 @@ function grillaMovimientos(){
         // cargar nombre del cliente segun nitCliente:
         columnaNombre= Cliente.obtenerNombreCliente(element.nitCliente)
         // cargar numero de producto segun idProducto:
-        columnaNumProducto= Producto.obtenerNumeroProducto(element.idProducto)
+        columnaNumProducto= Producto.obtenerNumeroProducto(element.nitCliente, element.idProducto)
+        // cargar tipo de producto segun idProducto:
+        columnaTipoProducto= Producto.obtenerTipoProducto(element.nitCliente, element.idProducto)
+        // cargar nombre del tipo de producto segun TipoProducto:
+        columnaNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(columnaTipoProducto)
+
         // asignar etiqueta de la etiqueta Tabla:
         cadenaHtml = cadenaHtml + `
             <tr style="height: 20px;">
                 <td>${element.nitCliente}</td>
                 <td>${columnaNombre}</td>
+                <td>${columnaTipoProducto}</td>
+                <td>${columnaNombreTipoProducto}</td>
                 <td>${columnaNumProducto}</td>
                 <td>${element.fechaMovim}</td>
                 <td>${element.documento}</td>
@@ -236,15 +246,22 @@ function clickEditar(){
         let a_movimientos = Movimiento.obtenerRegistro(mPosicionEditar)
 
         // cargar nombre del cliente segun nitCliente:
-        const columnaNombre= Cliente.obtenerNombreCliente(a_movimientos[0].nitCliente)
+        const inputNombreCliente= Cliente.obtenerNombreCliente(a_movimientos[0].nitCliente)
+
+
+        // cargar tipo de producto segun idProducto:
+        let TipoProductoConsulta= Producto.obtenerTipoProducto(a_movimientos[0].nitCliente, a_movimientos[0].idProducto)
+        // cargar nombre del tipo de producto segun TipoProducto:
+        let inputNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(TipoProductoConsulta)
+        
 
         // cargar numero del producto segun idProducto:
-        const columnaNumProducto= Producto.obtenerNumeroProducto(a_movimientos[0].idProducto)
+        const inputNumProducto= Producto.obtenerNumeroProducto(a_movimientos[0].nitCliente, a_movimientos[0].idProducto)
 
         document.querySelector("#nitCliente").value= a_movimientos[0].nitCliente ;
-        document.querySelector("#nombreSelected1").value= columnaNombre ;
+        document.querySelector("#nombreSelected1").value= inputNombreCliente ;
         document.querySelector("#idProducto").value= a_movimientos[0].idProducto ;
-        document.querySelector("#numeroProductoSelected").value=  columnaNumProducto;
+        document.querySelector("#numeroProductoSelected").value=  inputNombreTipoProducto+ " - " + inputNumProducto;
         document.querySelector("#fechaMovim").value= a_movimientos[0].fechaMovim ;
         document.querySelector("#documento").value= a_movimientos[0].documento ;
         document.querySelector("#vrEntrada").value= a_movimientos[0].vrEntrada ;
@@ -310,19 +327,19 @@ btnSelecCliente.addEventListener("change", function(evento){
     evento.preventDefault();
   
     //Leer usuario seleccionado en el select:
-    const btnSelect = document.getElementById("selectClientesMov")
-    let nitSeleccion = btnSelect.value
+    const htmlSelectClientesMov = document.getElementById("selectClientesMov")
+    let nitSeleccion = htmlSelectClientesMov.value
 
     //Input nitCliente destino para asignar el cliente seleccionado:
-    let nitCliente = document.getElementById("nitCliente")
+    let htmlNitCliente = document.getElementById("nitCliente")
 
     if (nitSeleccion.includes("Seleccione cliente")){
-        nitCliente.value = ""
+        htmlNitCliente.value = ""
     } else {
-        nitCliente.value = nitSeleccion
+        htmlNitCliente.value = nitSeleccion
     }
 
-    selectProductosMov(nitCliente.value)
+    selectProductosMov(htmlNitCliente.value)
     //alert("hola cliente seleccionado: "+ micliente)
     
 })
@@ -337,26 +354,31 @@ function selectProductosMov(nitClienteSelecc){
 
     a_productos = Producto.obtenerDatosProductos()
 
-    let selectProductosMov = document.querySelector("#selectProductosMov")
+    let htmlSelectProductosMov = document.querySelector("#selectProductosMov")
 
     if (a_productos.length){
 
         //Llenar String con contenido HTML para asignar a la etiqueta
         let cadenaHtml = "<option selected>Seleccione producto...</option>"
+        let columnaNombreTipoProducto= ""
 
         a_productos.forEach(function(element, index) {
             // index: indice del array
             
             //filtrar según nitCliente recibido por parámetro:
             if (element.nitCliente === nitClienteSelecc){
+
+                // cargar nombre del tipo de producto segun TipoProducto:
+                columnaNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(element.tipoProducto)
+
                 cadenaHtml = cadenaHtml + `
-                <option value=${element.idProducto}>${element.tipoProducto+ " "+ element.numeroProducto}</option>
+                <option value=${element.idProducto}>${columnaNombreTipoProducto + " - "+ element.numeroProducto}</option>
                 `
             }
         });
     
         //Asignar etiqueta HTML:
-        selectProductosMov.innerHTML = cadenaHtml
+        htmlSelectProductosMov.innerHTML = cadenaHtml
     }
 }
 
@@ -369,16 +391,16 @@ btnSelecProductos.addEventListener("change", function(evento){
     evento.preventDefault();
     
     //Leer producto seleccionado en el select:
-    const btnSelect = document.getElementById("selectProductosMov")
-    let productoSeleccion = btnSelect.value
+    const htmlBtnSelect = document.getElementById("selectProductosMov")
+    let productoSeleccion = htmlBtnSelect.value
 
     //Input destino para asignar el cliente seleccionado:
-    let idProductoInput = document.getElementById("idProducto")
+    let htmlIdProductoInput = document.getElementById("idProducto")
 
     if (productoSeleccion.includes("Seleccione Producto")){
-        idProductoInput.value = ""
+        htmlIdProductoInput.value = ""
     } else {
-        idProductoInput.value = productoSeleccion
+        htmlIdProductoInput.value = productoSeleccion
     }
     
 })

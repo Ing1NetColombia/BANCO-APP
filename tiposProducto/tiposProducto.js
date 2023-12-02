@@ -95,21 +95,19 @@ export default class tipoProducto {
    //---------------------
    //RETORNAR NOMBRE DE UN TIPO DE PRODUCTO RECIBIDO POR PARAMETRO
    //---------------------
-   static obtenerNombreTipoProducto(idTipoProducto){
+   static obtenerNombreTipoProducto(idTipoProductoConsultar){
         let a_TipoProductos = []
         
         if (localStorage.getItem("TipoProductos")) {
             a_TipoProductos = JSON.parse(localStorage.getItem("TipoProductos"))
         } 
-
+        
         let nombreTipoProducto = ""
 
         a_TipoProductos.forEach(function(element, index) {
-
-            if (element.TipoProducto=== idTipoProducto){
+            
+            if (element.tipoProducto=== idTipoProductoConsultar){
                 nombreTipoProducto = element.nombre
-
-
             }
         })
         return nombreTipoProducto
@@ -142,7 +140,7 @@ export default class tipoProducto {
     a_tipoProductos.forEach(function(element, index) {
 
         if (element.tipoProducto===tipoProductoVerificar){
-            //nitCliente ya existe
+            //nit Cliente ya existe
             tipoProductoExiste = true
         }
     })

@@ -115,9 +115,9 @@ export default class Producto {
    }
 
     //---------------------
-   //RETORNAR No.DE PRODUCTO DE UN PRODUCTO RECIBIDO POR PARAMETRO
+   //RETORNAR No.DE PRODUCTO DE UN CLIENTE Y PRODUCTO RECIBIDO POR PARAMETRO
    //---------------------
-   static obtenerNumeroProducto(idProducto){
+   static obtenerNumeroProducto(nitClienteVerificar, idProductoVerificar){
     let a_productos = []
     
     if (localStorage.getItem("productos")) {
@@ -128,12 +128,57 @@ export default class Producto {
 
     a_productos.forEach(function(element, index) {
 
-        if (element.idProducto=== idProducto){
+        if ((element.nitCliente=== nitClienteVerificar) && (element.idProducto=== idProductoVerificar)){
             numeroProducto = element.numeroProducto
         }
     })
 
     return numeroProducto
     }
+
+   //---------------------
+   //RETORNAR TIPO DE PRODUCTO DE UN CLIENTE Y PRODUCTO RECIBIDO POR PARAMETRO
+   //---------------------
+   static obtenerTipoProducto(nitClienteVerificar, idProductoVerificar){
+    let a_productos = []
+    
+    if (localStorage.getItem("productos")) {
+        a_productos = JSON.parse(localStorage.getItem("productos"))
+    } 
+
+    let tipoProducto = ""
+
+    a_productos.forEach(function(element, index) {
+
+        if ((element.nitCliente=== nitClienteVerificar) && (element.idProducto=== idProductoVerificar)) {
+            tipoProducto = element.tipoProducto
+        }
+    })
+
+    return tipoProducto
+    }
+
+    //---------------------
+   //VALIDAR CODIGO DE PRODUCTO UNICO POR CLIENTE Y TIPO DE PRODUCTO (PK)
+   //---------------------
+   idProductoExiste(nitClienteVerificar, tipoProductoVerificar, idProductoVerificar){
+    let a_tipoProductos = []
+
+    if (localStorage.getItem("productos")) {
+        a_tipoProductos = JSON.parse(localStorage.getItem("productos"))
+    } 
+
+    let idProductoExiste = false
+
+    a_tipoProductos.forEach(function(element, index) {
+
+        if ((element.nitCliente===nitClienteVerificar) && (element.tipoProducto===tipoProductoVerificar) && (element.idProducto===idProductoVerificar)){
+            //idProducto ya existe
+            idProductoExiste = true
+            }
+    })
+
+    return idProductoExiste
+}
 
 }

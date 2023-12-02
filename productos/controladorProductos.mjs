@@ -1,5 +1,6 @@
 import Producto from "./productos.js";
 import Cliente from "../clientes/clientes.js";
+import tipoProducto from "../tiposProducto/tiposProducto.js";
 
 
 //Variables:
@@ -9,7 +10,7 @@ var mPosicionEditar = 0
 //MOSTRAR DATOS GRILLA AL CARGAR LA PAGINA
 document.onload = grillaProductos()
 document.onload = selectClientes()
-
+document.onload = selectTiposProducto()
 
 //---------------------
 //EVENTO CLICK BOTON AGREGAR DEL FORM
@@ -31,6 +32,13 @@ if (btnRegistrarProducto){
         let objProducto = new Producto(nitCliente, idProducto, tipoProducto, numeroProducto); 
     
         if (objProducto.validarDatosProductos()){
+
+            //validar idProducto único (PK)
+            if (objProducto.idProductoExiste(nitCliente, tipoProducto, idProducto)){
+                alert("Este Id de Producto ya existe para este Cliente, no se aceptan repetidos")
+                return false
+            }            
+
             //Guardar en el almacenamiento:
             objProducto.crearProducto()
             alert("Producto ha sido creado")
@@ -65,6 +73,7 @@ if (btnModificarProducto){
         let objProducto = new Producto(nitCliente, idProducto, tipoProducto, numeroProducto); 
     
         if (objProducto.validarDatosProductos()){
+
             //Guardar en el almacenamiento:
             objProducto.guardaEditarProducto(mPosicionEditar)
             alert("Cambios han sido guardados")
@@ -103,6 +112,8 @@ function limpiarFormProductos(){
 
     //re-setear select de clientes:
     selectClientes()
+    //re-setear select de tipos de producto:
+    selectTiposProducto()
 
     document.querySelector("#nitCliente").value="" ;
     document.querySelector("#idProducto").value="" ;
@@ -131,6 +142,18 @@ function estadoBotonesProductos(estado){
         boton = document.querySelector("#nombreSelected1")
         boton.style.display = "none"
 
+        //activar select tipos de producto:
+        boton = document.querySelector("#selectTipoProducto")
+        boton.style.display = "block"
+
+        //ocultar input nombre tipo de producto:
+        boton = document.querySelector("#nombreTipoProducto")
+        boton.style.display = "none"
+
+        //activar codigo de producto:
+        boton = document.querySelector("#idProducto")
+       // boton.disabled = false
+        
         //llevar el foco al select de Clientes:
         boton = document.querySelector("#selectClientes")
         boton.style.display = "block"
@@ -152,9 +175,21 @@ function estadoBotonesProductos(estado){
         //ocultar el select de Clientes:
         boton = document.querySelector("#selectClientes")
         boton.style.display = "none"
-        
-        //llevar el foco al input nombre del cliente:
+
+        //ocultar select tipos de producto:
+        boton = document.querySelector("#selectTipoProducto")
+        boton.style.display = "none"
+
+        //activar input nombre tipo de producto:
+        boton = document.querySelector("#nombreTipoProducto")
+        boton.style.display = "block"
+
+        //inactivar codigo de producto:
         boton = document.querySelector("#idProducto")
+        boton.disabled = true
+        
+        //llevar el foco al input numero de producto:
+        boton = document.querySelector("#numeroProducto")
         boton.focus()
     }
 }
@@ -172,20 +207,25 @@ function grillaProductos(){
     if (tbl_productos) {
         //Llenar String con contenido HTML para asignar a la etiqueta
         let cadenaHtml = ""
-        let columnaNombre= ""
+        let columnaNombreCliente= ""
+        let columnaNombreTipoProducto= ""
 
         a_productos.forEach(function(element, index) {
             // index: indice del array
 
             // cargar nombre del cliente segun nitCliente:
-            columnaNombre= Cliente.obtenerNombreCliente(element.nitCliente)
+            columnaNombreCliente= Cliente.obtenerNombreCliente(element.nitCliente)
+            // cargar nombre del Tipo de Producto:
+            columnaNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(element.tipoProducto)
+
             // asignar etiqueta de la etiqueta Tabla:
             cadenaHtml = cadenaHtml + `
                 <tr style="height: 20px;">
                     <td>${element.nitCliente}</td>
-                    <td>${columnaNombre}</td>
-                    <td>${element.idProducto}</td>
+                    <td>${columnaNombreCliente}</td>
                     <td>${element.tipoProducto}</td>
+                    <td>${columnaNombreTipoProducto}</td>
+                    <td>${element.idProducto}</td>
                     <td>${element.numeroProducto}</td>
                     <td>
                     <button class="btn btn-warning p-2 mb-1 btnGridEditarProducto">Editar</button>
@@ -219,9 +259,13 @@ function clickEditarProductos(){
         // cargar nombre del cliente segun nitCliente:
         const columnaNombre= Cliente.obtenerNombreCliente(a_producto[0].nitCliente)
 
+        // cargar nombre del Tipo de Producto:
+        const columnaNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(a_producto[0].tipoProducto)
+
         document.querySelector("#nitCliente").value= a_producto[0].nitCliente ;
         document.querySelector("#nombreSelected1").value= columnaNombre
         document.querySelector("#idProducto").value= a_producto[0].idProducto ;
+        document.querySelector("#nombreTipoProducto").value= columnaNombreTipoProducto
         document.querySelector("#tipoProducto").value= a_producto[0].tipoProducto ;
         document.querySelector("#numeroProducto").value= a_producto[0].numeroProducto ;
 
@@ -256,7 +300,7 @@ function selectClientes(){
 
     a_clientes = Cliente.obtenerDatosClientes()
 
-    let selectClientes = document.querySelector("#selectClientes")
+    let htmlSelectClientes = document.querySelector("#selectClientes")
 
     if (a_clientes.length){
 
@@ -271,7 +315,7 @@ function selectClientes(){
         });
     
         //Asignar etiqueta HTML:
-        selectClientes.innerHTML = cadenaHtml
+        htmlSelectClientes.innerHTML = cadenaHtml
     }
 }
 
@@ -295,3 +339,53 @@ function clienteSeleccionado(){
 
     return nitCliente.value    
 }
+
+//---------------------
+//LLENAR CONTENIDO SELECT DE TIPOS DE PRODUCTO
+//---------------------
+function selectTiposProducto(){
+
+    let a_tipoProductos =[]
+
+    a_tipoProductos = tipoProducto.obtenerDatosTipoProductos()
+
+    let htmlTiposProducto = document.querySelector("#selectTipoProducto")
+
+    if (a_tipoProductos.length){
+
+        //Llenar String con contenido HTML para asignar a la etiqueta
+        let cadenaHtml = "<option selected>Seleccione Tipo de Producto...</option>"
+
+        a_tipoProductos.forEach(function(element, index) {
+            // index: indice del array
+            cadenaHtml = cadenaHtml + `
+                <option value=${element.tipoProducto}>${element.nombre}</option>
+                `
+        });
+    
+        //Asignar etiqueta HTML:
+        htmlTiposProducto.innerHTML = cadenaHtml
+    }
+}
+
+//---------------------
+//EVENTO CHANGE DEL SELECT DE TIPOS DE PRODUCTO: GUARDA EL TIPO PRODUCTO QUE SE SELECCIONÓ EN EL SELECT
+//---------------------
+let btnSelecTipoProducto = document.getElementById('selectTipoProducto')
+btnSelecTipoProducto.addEventListener("change", function(evento){
+    evento.preventDefault();
+  
+    //Leer tipo producto seleccionado en el select:
+    //const btnSelect = document.getElementById("selectClientesMov")
+    let tipoProductoSeleccion = this.value
+
+    //Input tipo producto destino para asignar el tipo producto seleccionado:
+    let tipoProducto = document.getElementById("tipoProducto")
+
+    if (tipoProductoSeleccion.includes("Seleccione Tipo de Producto")){
+        tipoProducto.value = ""
+    } else {
+        tipoProducto.value = tipoProductoSeleccion
+    }
+    
+})
