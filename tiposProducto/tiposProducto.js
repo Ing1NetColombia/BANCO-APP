@@ -148,4 +148,33 @@ export default class tipoProducto {
     return tipoProductoExiste
     }
 
+//---------------------
+//INTEGRIDAD REFERENCIAL DEL TIPO DE PRODUCTO EN OTRAS ENTIDADES
+//---------------------
+static tipoProductoDependencias(tipoProductoVerificar){
+
+    //valor a retornar la función:
+    //true = el tipoProducto tiene dependencias
+    //false = el tipoProducto no tiene dependencias
+    let dependencias
+    dependencias=false
+
+    //validar en productos:
+    let a_productos = []
+
+    if (localStorage.getItem("productos")) {
+        a_productos = JSON.parse(localStorage.getItem("productos"))
+    } 
+
+    a_productos.forEach(function(element, index) {
+
+        if (element.tipoProducto===tipoProductoVerificar){
+            //tipoProducto tiene dependencias
+            dependencias = true
+        }
+    })
+
+    return dependencias
+}
+
 }

@@ -160,11 +160,22 @@ function estadoBotonesClientes(estado){
 //---------------------
 //LLENAR CONTENIDO GRILLA:
 //---------------------
-function grillaClientes(){
+function grillaClientes(disabledBotones){
+    //parámetro "disabledBotones" :
+    //si el valor es "A" se Activan los botones Editar y Borrar
+    //si el valor es "I" se Inactivan los botones Editar y Borrar
+
     let a_clientes =[]
 
     let tbl_clientes = document.getElementById("bodyTablaClientes")
 
+    //activar o inactivar los botones Editar y Borrar según parámetro recibido:
+    let htmlDisabledBotones = ""
+    if (disabledBotones==="I"){
+        //inactivar los botones:
+        htmlDisabledBotones = " disabled= true "
+    }
+    
     if (tbl_clientes){
         a_clientes = Cliente.obtenerDatosClientes()
 
@@ -180,8 +191,8 @@ function grillaClientes(){
                     <td>${element.ciudad}</td>
                     <td>${element.email}</td>
                     <td>
-                    <button class="btn btn-warning p-2 mb-1 btnGridEditarCliente">Editar</button>
-                    <button class="btn btn-danger p-2 mb-1 btnGridBorrarCliente">Eliminar</button>
+                    <button class="btn btn-warning p-2 mb-1 btnGridEditarCliente" ${htmlDisabledBotones}>Editar</button>
+                    <button class="btn btn-danger p-2 mb-1 btnGridBorrarCliente" ${htmlDisabledBotones}>Eliminar</button>
                     </td>
                 </tr>
                 `
@@ -229,11 +240,21 @@ function clickBorrarClientes(){
     const a_bot_borrar = document.querySelectorAll(".btnGridBorrarCliente")
 
     a_bot_borrar.forEach((elemento, indice) => elemento.addEventListener("click", function(evento) {
-        //Borrar del almacenamiento:
-        let objCliente = new Cliente(0,"","","","")
-        objCliente.borrarCliente(indice)
-        //Refrescar grilla:
-        grillaClientes()
+
+        //consultar cliente según indice:
+        let a_cliente = Cliente.obtenerRegistroCliente(indice)
+
+        //validar integridad referencial del cliente:
+        if (Cliente.nitClienteDependencias(a_cliente[0].nitCliente)){
+            alert("Este cliente tiene productos asociados.  No puede borrarse.")
+        }else{
+            //Borrar del almacenamiento:
+            let objCliente = new Cliente(0,"","","","")
+            objCliente.borrarCliente(indice)
+            //Refrescar grilla:
+            grillaClientes()
+        }
+
     }))
     
 }

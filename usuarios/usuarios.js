@@ -115,7 +115,7 @@ export default class Usuario {
        let objRetorno = []
 
        if (indice >= 0){
-           objRetorno.pusha_(a_usuarios[indice])
+           objRetorno.push(a_usuarios[indice])
        }
 
        return objRetorno

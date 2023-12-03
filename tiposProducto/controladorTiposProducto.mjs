@@ -1,3 +1,4 @@
+import tipoProducto from "../tiposProducto/tiposProducto.js";
 import TipoProducto from "../tiposProducto/tiposProducto.js";
 
 //Variables:
@@ -152,11 +153,22 @@ function estadoBotonesTipoProductos(estado){
 //---------------------
 //LLENAR CONTENIDO GRILLA:
 //---------------------
-function grillaTipoProductos(){
+function grillaTipoProductos(disabledBotones){
+    //parámetro "disabledBotones" :
+    //si el valor es "A" se Activan los botones Editar y Borrar
+    //si el valor es "I" se Inactivan los botones Editar y Borrar
+
     let a_TipoProductos =[]
 
     let tbl_TipoProductos = document.getElementById("bodyTablaTipoProductos")
 
+    //activar o inactivar los botones Editar y Borrar según parámetro recibido:
+    let htmlDisabledBotones = ""
+    if (disabledBotones==="I"){
+        //inactivar los botones:
+        htmlDisabledBotones = " disabled= true "
+    }
+    
     if (tbl_TipoProductos){
         a_TipoProductos = TipoProducto.obtenerDatosTipoProductos()
 
@@ -169,8 +181,8 @@ function grillaTipoProductos(){
                     <td>${element.tipoProducto}</td>
                     <td>${element.nombre}</td>
                     <td>
-                    <button class="btn btn-warning p-2 mb-1 btnGridEditarTipoProducto">Editar</button>
-                    <button class="btn btn-danger p-2 mb-1 btnGridBorrarTipoProducto">Eliminar</button>
+                    <button class="btn btn-warning p-2 mb-1 btnGridEditarTipoProducto" ${htmlDisabledBotones}>Editar</button>
+                    <button class="btn btn-danger p-2 mb-1 btnGridBorrarTipoProducto" ${htmlDisabledBotones}>Eliminar</button>
                     </td>
                 </tr>
                 `
@@ -215,11 +227,20 @@ function clickBorrarTipoProductos(){
     const a_bot_borrar = document.querySelectorAll(".btnGridBorrarTipoProducto")
 
     a_bot_borrar.forEach((elemento, indice) => elemento.addEventListener("click", function(evento) {
-        //Borrar del almacenamiento:
-        let objTipoProducto = new TipoProducto(0,"","","","")
-        objTipoProducto.borrarTipoProducto(indice)
-        //Refrescar grilla:
-        grillaTipoProductos()
+
+        //consultar tipoProducto según indice:
+        let a_tipoProducto = TipoProducto.obtenerRegistroTipoProducto(indice)
+
+        //validar integridad referencial del tipo de producto:
+        if (TipoProducto.tipoProductoDependencias(a_tipoProducto[0].tipoProducto)){
+            alert("Este tipo de producto tiene productos asociados.  No puede borrarse.")
+        }else{
+            //Borrar del almacenamiento:
+            let objTipoProducto = new TipoProducto(0,"","","","")
+            objTipoProducto.borrarTipoProducto(indice)
+            //Refrescar grilla:
+            grillaTipoProductos()
+        }
     }))
     
 }

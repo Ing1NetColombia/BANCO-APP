@@ -8,7 +8,7 @@ import tipoProducto from "../tiposProducto/tiposProducto.js";
 var mPosicionEditar = 0
 
 //MOSTRAR DATOS GRILLA AL CARGAR LA PAGINA
-document.onload = grillaProductos()
+document.onload = grillaProductos("A","")
 document.onload = selectClientes()
 document.onload = selectTiposProducto()
 
@@ -22,7 +22,6 @@ if (btnRegistrarProducto){
     btnRegistrarProducto.addEventListener("click", function(evento){
         evento.preventDefault();
     
-        clienteSeleccionado()
         const nitCliente = document.querySelector("#nitCliente").value ;
         const idProducto = document.querySelector("#idProducto").value ;
         const tipoProducto = document.querySelector("#tipoProducto").value ;
@@ -34,8 +33,13 @@ if (btnRegistrarProducto){
         if (objProducto.validarDatosProductos()){
 
             //validar idProducto único (PK)
-            if (objProducto.idProductoExiste(nitCliente, tipoProducto, idProducto)){
+            if (objProducto.idProductoExiste(nitCliente, idProducto)){
                 alert("Este Id de Producto ya existe para este Cliente, no se aceptan repetidos")
+                return false
+            }            
+
+            if (objProducto.numeroProductoExiste(numeroProducto)){
+                alert("Este número de Producto ya existe en el Banco, debe ser único")
                 return false
             }            
 
@@ -43,7 +47,7 @@ if (btnRegistrarProducto){
             objProducto.crearProducto()
             alert("Producto ha sido creado")
             //refrescar grilla:    
-            grillaProductos()
+            grillaProductos("A","")
             //limpiar formulario:
             limpiarFormProductos()
     
@@ -78,7 +82,7 @@ if (btnModificarProducto){
             objProducto.guardaEditarProducto(mPosicionEditar)
             alert("Cambios han sido guardados")
             //refrescar grilla:    
-            grillaProductos()
+            grillaProductos("A","")
             //limpiar formulario:
             limpiarFormProductos()
     
@@ -99,6 +103,9 @@ btnCancelar.addEventListener("click", function(evento){
     //limpiar formulario:
     limpiarFormProductos()
 
+    //refrescar grilla:    
+    grillaProductos("A","")
+    
     //Actualizar estado de botones Agregar y Modificar:
     estadoBotonesProductos("AGREGAR")
     }
@@ -152,7 +159,7 @@ function estadoBotonesProductos(estado){
 
         //activar codigo de producto:
         boton = document.querySelector("#idProducto")
-       // boton.disabled = false
+        boton.disabled = false
         
         //llevar el foco al select de Clientes:
         boton = document.querySelector("#selectClientes")
@@ -197,42 +204,69 @@ function estadoBotonesProductos(estado){
 //---------------------
 //LLENAR CONTENIDO GRILLA:
 //---------------------
-function grillaProductos(){
+function grillaProductos(disabledBotones, nitClienteFiltro){
+    //parámetro "disabledBotones" :
+    //si el valor es "A" se Activan los botones Editar y Borrar
+    //si el valor es "I" se Inactivan los botones Editar y Borrar
+
+    //parámetro "nitClienteFiltro" : cliente a filtrar filas de la grilla
+
+    //activar o inactivar los botones Editar y Borrar según parámetro recibido:
+    let htmlDisabledBotones = ""
+    if (disabledBotones==="I"){
+        //inactivar los botones:
+        htmlDisabledBotones = " disabled= true "
+    }
+
     let a_productos =[]
 
     a_productos = Producto.obtenerDatosProductos()
 
     let tbl_productos = document.getElementById("bodyTablaProductos")
-
+    
     if (tbl_productos) {
         //Llenar String con contenido HTML para asignar a la etiqueta
         let cadenaHtml = ""
         let columnaNombreCliente= ""
         let columnaNombreTipoProducto= ""
+        let continuar = true
 
         a_productos.forEach(function(element, index) {
             // index: indice del array
 
-            // cargar nombre del cliente segun nitCliente:
-            columnaNombreCliente= Cliente.obtenerNombreCliente(element.nitCliente)
-            // cargar nombre del Tipo de Producto:
-            columnaNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(element.tipoProducto)
+            continuar = false
 
-            // asignar etiqueta de la etiqueta Tabla:
-            cadenaHtml = cadenaHtml + `
-                <tr style="height: 20px;">
-                    <td>${element.nitCliente}</td>
-                    <td>${columnaNombreCliente}</td>
-                    <td>${element.tipoProducto}</td>
-                    <td>${columnaNombreTipoProducto}</td>
-                    <td>${element.idProducto}</td>
-                    <td>${element.numeroProducto}</td>
-                    <td>
-                    <button class="btn btn-warning p-2 mb-1 btnGridEditarProducto">Editar</button>
-                    <button class="btn btn-danger p-2 mb-1 btnGridBorrarProducto">Eliminar</button>
-                    </td>
-                </tr>
-                `
+            //filtrar filas según cliente recibido por parámetro:
+            if (nitClienteFiltro){
+                if (element.nitCliente===nitClienteFiltro){
+                    continuar=true
+                }
+            }else{
+                continuar = true
+            }
+
+            if (continuar){
+                // cargar nombre del cliente segun nitCliente:
+                columnaNombreCliente= Cliente.obtenerNombreCliente(element.nitCliente)
+                // cargar nombre del Tipo de Producto:
+                columnaNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(element.tipoProducto)
+
+                // asignar etiqueta de la etiqueta Tabla:
+                cadenaHtml = cadenaHtml + `
+                    <tr style="height: 20px;">
+                        <td>${element.nitCliente}</td>
+                        <td>${columnaNombreCliente}</td>
+                        <td>${element.tipoProducto}</td>
+                        <td>${columnaNombreTipoProducto}</td>
+                        <td>${element.idProducto}</td>
+                        <td>${element.numeroProducto}</td>
+                        <td>
+                        <button indiceFila="${index}" class="btn btn-warning p-2 mb-1 btnGridEditarProducto" ${htmlDisabledBotones}>Editar</button>
+                        <button indiceFila="${index}" class="btn btn-danger p-2 mb-1 btnGridBorrarProducto" ${htmlDisabledBotones}>Eliminar</button>
+                        </td>
+                    </tr>
+                    `
+                }
         });
 
         //Asignar etiqueta HTML:
@@ -251,7 +285,11 @@ function clickEditarProductos(){
     const a_bot_editar = document.querySelectorAll(".btnGridEditarProducto")
  
     a_bot_editar.forEach((elemento, indice) => elemento.addEventListener("click", function(evento) {
-        mPosicionEditar = indice
+        //mPosicionEditar = indice
+
+        //obtener fila de la tabla según atributo asignado al crear la fila de la tabla HTML:
+        let indiceFila = elemento.getAttribute("indiceFila")
+        mPosicionEditar = parseInt(indiceFila)
 
         //consultar producto según indice:
         const a_producto = Producto.obtenerRegistroProductos(mPosicionEditar)
@@ -269,6 +307,9 @@ function clickEditarProductos(){
         document.querySelector("#tipoProducto").value= a_producto[0].tipoProducto ;
         document.querySelector("#numeroProducto").value= a_producto[0].numeroProducto ;
 
+        //refrescar grilla:    
+        grillaProductos("I", a_producto[0].nitCliente)
+
         //Actualizar estado de botones Agregar y Modificar:
         estadoBotonesProductos("MODIFICAR")    
     }))
@@ -282,13 +323,25 @@ function clickBorrarProductos(){
     const a_bot_borrar = document.querySelectorAll(".btnGridBorrarProducto")
 
     a_bot_borrar.forEach((elemento, indice) => elemento.addEventListener("click", function(evento) {
-        //Borrar del almacenamiento:
-        let objProducto = new Producto(0,"","","","")
-        objProducto.borrarProducto(indice)
-        //Refrescar grilla:
-        grillaProductos()
-    }))
-    
+
+        //obtener fila de la tabla según atributo asignado al crear la fila de la tabla HTML:
+        let indiceFila = elemento.getAttribute("indiceFila")
+
+        //consultar Producto según indice:
+        let a_producto = Producto.obtenerRegistroProductos(indiceFila)
+
+        //validar integridad referencial del cliente:
+        if (Producto.idProductoDependencias(a_producto[0].nitCliente, a_producto[0].idProducto)){
+            alert("Este producto tiene movimientos asociados.  No puede borrarse.")
+        }else{
+            //Borrar del almacenamiento:
+            let objProducto = new Producto(0,"","","","")
+            objProducto.borrarProducto(indiceFila)
+            //Refrescar grilla:
+            grillaProductos("A","")
+        }
+
+    }))    
 }
 
 //---------------------
@@ -320,24 +373,35 @@ function selectClientes(){
 }
 
 //---------------------
-//RETORNAR CLIENTE ELEGIDO EN EL SELECT
+//EVENTO CHANGE EN SELECT DE CLIENTES
 //---------------------
-function clienteSeleccionado(){
+let btnClienteProductos = document.getElementById('selectClientes')
 
-    //Leer usuario seleccionado en el select:
-    const btnSelect = document.getElementById("selectClientes")
-    let nitSeleccion = btnSelect.value
+if (btnClienteProductos){
 
-    //Input destino para asignar el cliente seleccionado:
-    let nitCliente = document.getElementById("nitCliente")
+    btnClienteProductos.addEventListener("change", function(evento){
+        evento.preventDefault();
 
-    if (nitSeleccion==="Seleccione cliente..."){
-        nitCliente.value = ""
-    } else {
-        nitCliente.value = nitSeleccion
-    }
+        //Leer usuario seleccionado en el select:
+        const btnSelect = document.getElementById("selectClientes")
+        let nitSeleccion = btnSelect.value
 
-    return nitCliente.value    
+        //Input destino para asignar el cliente seleccionado:
+        let nitClienteHtml = document.getElementById("nitCliente")
+        //Input destino para asignar el consecutivo de producto nuevo:
+        let idProductoHtml = document.getElementById("idProducto")
+
+        if (nitSeleccion==="Seleccione cliente..."){
+            nitClienteHtml.value = ""
+        } else {
+            nitClienteHtml.value = nitSeleccion
+            //calcular consecutivo de producto:
+            idProductoHtml.value = Producto.calcularConsecutivoProducto(nitClienteHtml.value)
+        }
+
+        //refrescar grilla filtrando según el cliente seleccionado:
+        grillaProductos("A",nitClienteHtml.value)
+    })
 }
 
 //---------------------
@@ -355,11 +419,14 @@ function selectTiposProducto(){
 
         //Llenar String con contenido HTML para asignar a la etiqueta
         let cadenaHtml = "<option selected>Seleccione Tipo de Producto...</option>"
+        let htmlTextoSelect =""
 
         a_tipoProductos.forEach(function(element, index) {
+            //texto de la opción select:
+            htmlTextoSelect = element.tipoProducto + " - " + element.nombre
             // index: indice del array
             cadenaHtml = cadenaHtml + `
-                <option value=${element.tipoProducto}>${element.nombre}</option>
+                <option value=${element.tipoProducto}>${htmlTextoSelect}</option>
                 `
         });
     

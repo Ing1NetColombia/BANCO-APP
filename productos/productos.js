@@ -158,10 +158,10 @@ export default class Producto {
     return tipoProducto
     }
 
-    //---------------------
+   //---------------------
    //VALIDAR CODIGO DE PRODUCTO UNICO POR CLIENTE Y TIPO DE PRODUCTO (PK)
    //---------------------
-   idProductoExiste(nitClienteVerificar, tipoProductoVerificar, idProductoVerificar){
+   idProductoExiste(nitClienteVerificar, idProductoVerificar){
     let a_tipoProductos = []
 
     if (localStorage.getItem("productos")) {
@@ -172,13 +172,97 @@ export default class Producto {
 
     a_tipoProductos.forEach(function(element, index) {
 
-        if ((element.nitCliente===nitClienteVerificar) && (element.tipoProducto===tipoProductoVerificar) && (element.idProducto===idProductoVerificar)){
+        if ((element.nitCliente===nitClienteVerificar) && (element.idProducto===idProductoVerificar)){
             //idProducto ya existe
             idProductoExiste = true
             }
     })
 
     return idProductoExiste
+}
+
+//---------------------
+//VALIDAR NUMERO DE PRODUCTO UNICO : LOS NUMEROS DE PRODUCTO DEBEN SER UNICOS DENTRO DEL BANCO
+//---------------------
+numeroProductoExiste(numeroProductoVerificar){
+
+    let a_tipoProductos = []
+
+    if (localStorage.getItem("productos")) {
+        a_tipoProductos = JSON.parse(localStorage.getItem("productos"))
+    } 
+
+    let numeroProductoExiste = false
+
+    a_tipoProductos.forEach(function(element, index) {
+
+        if (element.numeroProducto===numeroProductoVerificar){
+            //idProducto ya existe
+            numeroProductoExiste = true
+            }
+    })
+
+    return numeroProductoExiste
+}
+
+//---------------------
+//CALCULAR NUMERO CONSECUTIVO (001 A 999) PARA EL PRODUCTO, DE ACUERDO AL CLIENTE RECIBIDO POR PARAMETRO
+//---------------------
+static calcularConsecutivoProducto(nitClienteVerificar){
+
+    let a_tipoProductos = []
+
+    if (localStorage.getItem("productos")) {
+        a_tipoProductos = JSON.parse(localStorage.getItem("productos"))
+    } 
+
+    let consecutivoProducto = ""
+    let ultimo = 0
+    
+    a_tipoProductos.forEach(function(element, index) {
+
+        //determinar el máximo idProducto del cliente recibido por parámetro:
+        if (element.nitCliente===nitClienteVerificar){
+            if (parseInt(element.idProducto) > ultimo){
+                ultimo = parseInt(element.idProducto)
+            }
+        }
+    })
+
+    //calcular número consecutivo agregando ceros a la izquierda:
+    ultimo = ultimo + 1
+    consecutivoProducto = ultimo.toString().padStart(3, '0')
+
+    return consecutivoProducto
+}
+
+//---------------------
+//INTEGRIDAD REFERENCIAL DEL PRODUCTO EN OTRAS ENTIDADES
+//---------------------
+static idProductoDependencias(nitClienteVerificar, idProductoVerificar){
+
+    //valor a retornar la función:
+    //true = el producto tiene dependencias
+    //false = el producto no tiene dependencias
+    let dependencias
+    dependencias=false
+
+    //validar en movimientos:
+    let a_movimientos = []
+
+    if (localStorage.getItem("movimientos")) {
+        a_movimientos = JSON.parse(localStorage.getItem("movimientos"))
+    } 
+
+    a_movimientos.forEach(function(element, index) {
+
+        if ((element.idProducto===idProductoVerificar) && (element.nitCliente===nitClienteVerificar)){
+            //producto del Cliente tiene dependencias
+            dependencias = true
+        }
+    })
+
+    return dependencias
 }
 
 }

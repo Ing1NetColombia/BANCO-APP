@@ -8,9 +8,8 @@ import tipoProducto from "../tiposProducto/tiposProducto.js";
 var mPosicionEditar = 0
 
 //MOSTRAR DATOS GRILLA AL CARGAR LA PAGINA
-document.onload = grillaMovimientos()
+document.onload = grillaMovimientos("A","")
 document.onload = selectClientesMov()
-
 
 //---------------------
 //EVENTO CLICK BOTON AGREGAR DEL FORM
@@ -35,7 +34,7 @@ btnRegistrar.addEventListener("click", function(evento){
         objMovimiento.crear()
         alert("Movimiento ha sido creado")
         //refrescar grilla:    
-        grillaMovimientos()
+        grillaMovimientos("A","")
         //limpiar formulario:
         limpiarForm()
 
@@ -66,7 +65,7 @@ btnModificar.addEventListener("click", function(evento){
         objMovimiento.guardaEditar(mPosicionEditar)
         alert("Cambios han sido guardados")
         //refrescar grilla:    
-        grillaMovimientos()
+        grillaMovimientos("A","")
         //limpiar formulario:
         limpiarForm()
 
@@ -84,6 +83,9 @@ btnCancelar.addEventListener("click", function(evento){
 
     //limpiar formulario:
     limpiarForm()
+
+    //refrescar grilla:    
+    grillaMovimientos("A","")
 
     //Actualizar estado de botones Agregar y Modificar:
     estadoBotones("AGREGAR")
@@ -180,7 +182,20 @@ function estadoBotones(estado){
 //---------------------
 //LLENAR CONTENIDO GRILLA:
 //---------------------
-function grillaMovimientos(){
+function grillaMovimientos(disabledBotones, nitClienteFiltro){
+    //parámetro "disabledBotones" :
+    //si el valor es "A" se Activan los botones Editar y Borrar
+    //si el valor es "I" se Inactivan los botones Editar y Borrar
+
+    //parámetro "nitClienteFiltro" : cliente a filtrar filas de la grilla
+
+    //activar o inactivar los botones Editar y Borrar según parámetro recibido:
+    let htmlDisabledBotones = ""
+    if (disabledBotones==="I"){
+        //inactivar los botones:
+        htmlDisabledBotones = " disabled= true "
+    }    
+    
     let a_movimientos =[]
 
     a_movimientos = Movimiento.obtenerDatos()
@@ -191,37 +206,52 @@ function grillaMovimientos(){
     let columnaNumProducto= ""
     let columnaTipoProducto= ""
     let columnaNombreTipoProducto= ""
+    let continuar = true
 
     a_movimientos.forEach(function(element, index) {
         // index: indice del array
 
-        // cargar nombre del cliente segun nitCliente:
-        columnaNombre= Cliente.obtenerNombreCliente(element.nitCliente)
-        // cargar numero de producto segun idProducto:
-        columnaNumProducto= Producto.obtenerNumeroProducto(element.nitCliente, element.idProducto)
-        // cargar tipo de producto segun idProducto:
-        columnaTipoProducto= Producto.obtenerTipoProducto(element.nitCliente, element.idProducto)
-        // cargar nombre del tipo de producto segun TipoProducto:
-        columnaNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(columnaTipoProducto)
+        continuar = false
 
-        // asignar etiqueta de la etiqueta Tabla:
-        cadenaHtml = cadenaHtml + `
-            <tr style="height: 20px;">
-                <td>${element.nitCliente}</td>
-                <td>${columnaNombre}</td>
-                <td>${columnaTipoProducto}</td>
-                <td>${columnaNombreTipoProducto}</td>
-                <td>${columnaNumProducto}</td>
-                <td>${element.fechaMovim}</td>
-                <td>${element.documento}</td>
-                <td>${element.vrEntrada}</td>
-                <td>${element.vrSalida}</td>
-                <td>
-                <button class="btn btn-warning p-2 mb-1 btnGridEditar">Editar</button>
-                <button class="btn btn-danger p-2 mb-1 btnGridBorrar">Eliminar</button>
-                </td>
-            </tr>
-            `
+        //filtrar filas según cliente recibido por parámetro:
+        if (nitClienteFiltro){
+            if (element.nitCliente===nitClienteFiltro){
+                continuar=true
+            }
+        }else{
+            continuar = true
+        }
+
+        if (continuar){
+            // cargar nombre del cliente segun nitCliente:
+            columnaNombre= Cliente.obtenerNombreCliente(element.nitCliente)
+            // cargar numero de producto segun idProducto:
+            columnaNumProducto= Producto.obtenerNumeroProducto(element.nitCliente, element.idProducto)
+            // cargar tipo de producto segun idProducto:
+            columnaTipoProducto= Producto.obtenerTipoProducto(element.nitCliente, element.idProducto)
+            // cargar nombre del tipo de producto segun TipoProducto:
+            columnaNombreTipoProducto= tipoProducto.obtenerNombreTipoProducto(columnaTipoProducto)
+
+            // asignar etiqueta de la etiqueta Tabla:
+            cadenaHtml = cadenaHtml + `
+                <tr style="height: 20px;">
+                    <td>${element.nitCliente}</td>
+                    <td>${columnaNombre}</td>
+                    <td>${columnaTipoProducto}</td>
+                    <td>${columnaNombreTipoProducto}</td>
+                    <td>${columnaNumProducto}</td>
+                    <td>${element.fechaMovim}</td>
+                    <td>${element.documento}</td>
+                    <td>${element.vrEntrada}</td>
+                    <td>${element.vrSalida}</td>
+                    <td>
+                    <button indiceFila="${index}" class="btn btn-warning p-2 mb-1 btnGridEditar" ${htmlDisabledBotones}>Editar</button>
+                    <button indiceFila="${index}" class="btn btn-danger p-2 mb-1 btnGridBorrar" ${htmlDisabledBotones}>Eliminar</button>
+                    </td>
+                </tr>
+                `
+        }
+
     });
 
     //Asignar etiqueta HTML:
@@ -240,8 +270,13 @@ function clickEditar(){
     const a_bot_editar = document.querySelectorAll(".btnGridEditar")
  
     a_bot_editar.forEach((elemento, indice) => elemento.addEventListener("click", function(evento) {
-        mPosicionEditar = indice
+        //mPosicionEditar = indice
 
+        //obtener fila de la tabla según atributo asignado al crear la fila de la tabla HTML:
+        let indiceFila = elemento.getAttribute("indiceFila")
+        mPosicionEditar = parseInt(indiceFila)
+        alert("FILA A EDITAR: "+ mPosicionEditar)
+        
         //consultar producto según indice:
         let a_movimientos = Movimiento.obtenerRegistro(mPosicionEditar)
 
@@ -267,6 +302,9 @@ function clickEditar(){
         document.querySelector("#vrEntrada").value= a_movimientos[0].vrEntrada ;
         document.querySelector("#vrSalida").value= a_movimientos[0].vrSalida ;
 
+        //refrescar grilla:    
+        grillaMovimientos("I", a_movimientos[0].nitCliente)
+
         //Actualizar estado de botones Agregar y Modificar:
         estadoBotones("MODIFICAR")    
     }))
@@ -280,11 +318,15 @@ function clickBorrar(){
     const a_bot_borrar = document.querySelectorAll(".btnGridBorrar")
 
     a_bot_borrar.forEach((elemento, indice) => elemento.addEventListener("click", function(evento) {
+
+        //obtener fila de la tabla según atributo asignado al crear la fila de la tabla HTML:
+        let indiceFila = elemento.getAttribute("indiceFila")
+
         //Borrar del almacenamiento:
         let objMovimiento = new Movimiento(0,"","","","","")
-        objMovimiento.borrar(indice)
+        objMovimiento.borrar(indiceFila)
         //Refrescar grilla:
-        grillaMovimientos()
+        grillaMovimientos("A","")
     }))
     
 }
@@ -338,6 +380,9 @@ btnSelecCliente.addEventListener("change", function(evento){
     } else {
         htmlNitCliente.value = nitSeleccion
     }
+
+    //refrescar grilla:    
+    grillaMovimientos("A",htmlNitCliente.value)
 
     selectProductosMov(htmlNitCliente.value)
     //alert("hola cliente seleccionado: "+ micliente)

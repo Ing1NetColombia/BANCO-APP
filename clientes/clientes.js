@@ -170,4 +170,33 @@ export default class Cliente {
         return nitClienteExiste
     }
 
+    //---------------------
+   //INTEGRIDAD REFERENCIAL DEL CLIENTE EN OTRAS ENTIDADES
+   //---------------------
+   static nitClienteDependencias(nitClienteVerificar){
+
+        //valor a retornar la función:
+        //true = el cliente tiene dependencias
+        //false = el cliente no tiene dependencias
+        let dependencias
+        dependencias=false
+
+        //validar en productos:
+        let a_productos = []
+
+        if (localStorage.getItem("productos")) {
+            a_productos = JSON.parse(localStorage.getItem("productos"))
+        } 
+
+        a_productos.forEach(function(element, index) {
+
+            if (element.nitCliente===nitClienteVerificar){
+                //nitCliente tiene dependencias
+                dependencias = true
+            }
+        })
+
+        return dependencias
+    }
+
 }

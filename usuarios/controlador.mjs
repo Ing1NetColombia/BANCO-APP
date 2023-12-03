@@ -135,7 +135,10 @@ function estadoBotones(estado){
 //---------------------
 //LLENAR CONTENIDO GRILLA:
 //---------------------
-function grillaUsuarios(){
+function grillaUsuarios(disabledBotones){
+    //parámetro "disabledBotones" :
+    //si el valor es "A" se Activan los botones Editar y Borrar
+    //si el valor es "I" se Inactivan los botones Editar y Borrar
 
     let a_usuarios =[]
 
@@ -143,6 +146,13 @@ function grillaUsuarios(){
 
     let div_tabla = document.querySelector("#div_tabla")
 
+    //activar o inactivar los botones Editar y Borrar según parámetro recibido:
+    let htmlDisabledBotones = ""
+    if (disabledBotones==="I"){
+        //inactivar los botones:
+        htmlDisabledBotones = " disabled= true "
+    }
+    
     if (a_usuarios.length){
 
         //mostrar div de tabla:
@@ -158,8 +168,8 @@ function grillaUsuarios(){
                     <td>${element.nombre}</td>
                     <td>${element.email}</td>
                     <td>
-                    <button class="btn btn-warning p-2 mb-1 btnGridEditar">Editar</button>
-                    <button class="btn btn-danger p-2 mb-1 btnGridBorrar">Eliminar</button>
+                    <button class="btn btn-warning p-2 mb-1 btnGridEditar" ${htmlDisabledBotones}>Editar</button>
+                    <button class="btn btn-danger p-2 mb-1 btnGridBorrar" ${htmlDisabledBotones}>Eliminar</button>
                     </td>
                 </tr>
                 `
