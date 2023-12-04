@@ -82,6 +82,12 @@ var btnCancelar = document.getElementById('btnCancelar')
 btnCancelar.addEventListener("click", function(evento){
     evento.preventDefault();
 
+    if (esPrimeraVez ==="S"){
+        // Cuando es la primera vez, al pulsar el botón cancelar retorna al formulario de Login
+        window.location.href = "./frmLogin.html"
+    }
+    
+
     //limpiar formulario:
     limpiarForm()
 
