@@ -1,4 +1,5 @@
 import Cliente from "./clientes.js";
+import Utils from "../utils/utils.js";
 
 //Variables:
 //Indice elemento a modificar:
@@ -28,13 +29,13 @@ if (btnRegistrarCliente){
         if (objCliente.validarDatosCliente()){
             //validar nitCliente único (PK)
             if (objCliente.nitClienteExiste(nitCliente)){
-                alert("Este Nit de Cliente ya existe, no se aceptan repetidos")
+                swal("Este Nit de Cliente ya existe, no se aceptan repetidos")
                 return false
             }
 
             //Guardar en el almacenamiento:
             objCliente.crearCliente()
-            alert("Cliente ha sido creado")
+            swal("Cliente creado")
             //refrescar grilla:    
             grillaClientes()
             //limpiar formulario:
@@ -68,7 +69,7 @@ if (btnModificarCliente){
         if (objCliente.validarDatosCliente()){
             //Guardar en el almacenamiento:
             objCliente.guardaEditarCliente(mPosicionEditar)
-            alert("Cambios han sido guardados")
+            swal("Cambios guardados")
             //refrescar grilla:    
             grillaClientes()
             //limpiar formulario:
@@ -246,11 +247,10 @@ function clickBorrarClientes(){
 
         //validar integridad referencial del cliente:
         if (Cliente.nitClienteDependencias(a_cliente[0].nitCliente)){
-            alert("Este cliente tiene productos asociados.  No puede borrarse.")
+            swal("Este cliente tiene productos asociados.  No puede borrarse.")
         }else{
             //Borrar del almacenamiento:
-            let objCliente = new Cliente(0,"","","","")
-            objCliente.borrarCliente(indice)
+            Cliente.borrarCliente(indice)
             //Refrescar grilla:
             grillaClientes()
         }

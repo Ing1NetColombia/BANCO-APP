@@ -40,7 +40,7 @@ export default class tipoProducto {
     //---------------------
     //BORRAR TIPO DE PRODUCTO
     //---------------------
-    borrarTipoProducto(indice_array) {
+    static borrarTipoProducto(indice_array) {
         let TipoProductos = []
 
         if (localStorage.getItem("TipoProductos")) {
@@ -57,15 +57,15 @@ export default class tipoProducto {
     //---------------------
     validarDatosTipoProducto() {
         if (!this.tipoProducto){
-            alert("Por favor confirmar el código de Tipo de Producto: "+ this.tipoProducto)
+            swal("Por favor confirmar el código de Tipo de Producto: "+ this.tipoProducto)
             return false
         }
         if (this.tipoProducto.length < 2){
-            alert("Código del Tipo de Producto debe contener por lo menos 2 caracteres")
+            swal("Código del Tipo de Producto debe contener por lo menos 2 caracteres")
             return false
         }
             if (!this.nombre){
-            alert("Por favor confirmar el nombre del tipo de producto")
+            swal("Por favor confirmar el nombre del tipo de producto")
             return false
         }
         // Datos correctos

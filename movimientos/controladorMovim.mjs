@@ -2,6 +2,7 @@ import Movimiento from "./movimientos.js";
 import Cliente from "../clientes/clientes.js";
 import Producto from "../productos/productos.js";
 import tipoProducto from "../tiposProducto/tiposProducto.js";
+import Utils from "../utils/utils.js";
 
 //Variables:
 //Indice elemento a modificar:
@@ -24,7 +25,11 @@ btnRegistrar.addEventListener("click", function(evento){
     const documento = document.querySelector("#documento").value ;
     const vrEntrada = document.querySelector("#vrEntrada").value ;
     const vrSalida = document.querySelector("#vrSalida").value ;
-  
+
+    //validar fecha del movimiento:
+    if (!Utils.fechaValida(fechaMovim,"fecha del movimiento")){
+        return
+    }
 
     // crear objeto para invocar métodos de la clase
     let objMovimiento = new Movimiento(nitCliente, idProducto, fechaMovim, documento, vrEntrada, vrSalida);
@@ -32,7 +37,7 @@ btnRegistrar.addEventListener("click", function(evento){
     if (objMovimiento.validarDatos()){
         //Guardar en el almacenamiento:
         objMovimiento.crear()
-        alert("Movimiento ha sido creado")
+        swal("Movimiento creado")
         //refrescar grilla:    
         grillaMovimientos("A","")
         //limpiar formulario:
@@ -63,7 +68,7 @@ btnModificar.addEventListener("click", function(evento){
     if (objMovimiento.validarDatos()){
         //Guardar en el almacenamiento:
         objMovimiento.guardaEditar(mPosicionEditar)
-        alert("Cambios han sido guardados")
+        swal("Cambios guardados")
         //refrescar grilla:    
         grillaMovimientos("A","")
         //limpiar formulario:
@@ -275,7 +280,6 @@ function clickEditar(){
         //obtener fila de la tabla según atributo asignado al crear la fila de la tabla HTML:
         let indiceFila = elemento.getAttribute("indiceFila")
         mPosicionEditar = parseInt(indiceFila)
-        alert("FILA A EDITAR: "+ mPosicionEditar)
         
         //consultar producto según indice:
         let a_movimientos = Movimiento.obtenerRegistro(mPosicionEditar)
@@ -323,8 +327,7 @@ function clickBorrar(){
         let indiceFila = elemento.getAttribute("indiceFila")
 
         //Borrar del almacenamiento:
-        let objMovimiento = new Movimiento(0,"","","","","")
-        objMovimiento.borrar(indiceFila)
+        Movimiento.borrar(indiceFila)
         //Refrescar grilla:
         grillaMovimientos("A","")
     }))
@@ -368,9 +371,8 @@ let btnSelecCliente = document.getElementById('selectClientesMov')
 btnSelecCliente.addEventListener("change", function(evento){
     evento.preventDefault();
   
-    //Leer usuario seleccionado en el select:
-    const htmlSelectClientesMov = document.getElementById("selectClientesMov")
-    let nitSeleccion = htmlSelectClientesMov.value
+    //Tomar usuario seleccionado en el select:
+    let nitSeleccion = this.value
 
     //Input nitCliente destino para asignar el cliente seleccionado:
     let htmlNitCliente = document.getElementById("nitCliente")
@@ -384,9 +386,7 @@ btnSelecCliente.addEventListener("change", function(evento){
     //refrescar grilla:    
     grillaMovimientos("A",htmlNitCliente.value)
 
-    selectProductosMov(htmlNitCliente.value)
-    //alert("hola cliente seleccionado: "+ micliente)
-    
+    selectProductosMov(htmlNitCliente.value)    
 })
 
 //---------------------
@@ -435,9 +435,8 @@ let btnSelecProductos = document.getElementById('selectProductosMov')
 btnSelecProductos.addEventListener("change", function(evento){
     evento.preventDefault();
     
-    //Leer producto seleccionado en el select:
-    const htmlBtnSelect = document.getElementById("selectProductosMov")
-    let productoSeleccion = htmlBtnSelect.value
+    //Tomar producto seleccionado en el select:
+    let productoSeleccion = this.value
 
     //Input destino para asignar el cliente seleccionado:
     let htmlIdProductoInput = document.getElementById("idProducto")

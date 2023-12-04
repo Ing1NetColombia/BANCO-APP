@@ -1,7 +1,9 @@
 import Usuario from "./usuarios.js";
+import Utils from "../utils/utils.js";
 
 //MOSTRAR DATOS GRILLA AL CARGAR LA PAGINA
 document.onload = selectUsuarios()
+document.onload = loadFormularioLogin()
 
 // EVENTO CLICK BOTON INGRESAR:
 const boton = document.getElementById("btnLogin")
@@ -12,32 +14,26 @@ boton.addEventListener("click", function (evento) {
     const btnSelect = document.getElementById("selectUsuarios")
     let idSeleccion = btnSelect.value
     if (idSeleccion==="Seleccione usuario..."){
-        alert("Debe seleccionar un usuario")
+        swal("Debe seleccionar un usuario")
         return
     }
 
     //Leer password:
-    const password = document.getElementById("password").value
-        if (!password){
-            alert("Debe digitar la contraseña")
+    const loginPassword = document.getElementById("loginPassword").value
+        if (!loginPassword){
+            swal("Debe digitar la contraseña")
             return
         }
 
-    if (Usuario.usuarioValido(parseInt(idSeleccion), password)){
+    //validar la contraseña del usuario:
+    if (Usuario.usuarioValido(parseInt(idSeleccion), loginPassword)){
         // ingresar a página principal
         window.location.href = "../principal/frmPrincipal.html"    
     } else {
         // no puede ingresar
-        alert("Usuario o contraseña incorrectos")
+        swal("Verifique su contraseña e intente de nuevo");
         return
     }
-    
-})
-
-//EVENTO CHANGE DEL SELECT:
-const btnSelect = document.getElementById("selectUsuarios")
-btnSelect.addEventListener("change", function(evento) {
-    let seleccion = selectUsuarios.value
     
 })
 
@@ -67,4 +63,37 @@ function selectUsuarios(){
         //Asignar etiqueta HTML:
         selectUsuarios.innerHTML = cadenaHtml    
     }
+}
+
+//---------------------
+//EVENTO CLICK DE LA IMAGEN DE MOSTRAR/OCULTAR INPUT LOGINPASSWORD
+//---------------------
+let btnLoginImagenPassword = document.getElementById('loginPasswordImagen')
+btnLoginImagenPassword.addEventListener("click", function(evento){
+    evento.preventDefault();
+
+    //etiqueta input:
+    let inputPassword = document.getElementById("loginPassword")
+
+    //ejecutar cambio de estado:
+    Utils.estadoPassword(this, inputPassword)       
+})
+
+//---------------------------------
+//CUANDO ES LA PRIMERA VEZ, SE ACTIVA LA ETIQUETA "REGISTRARSE", DE LO CONTRARIO, NO SE MUESTRA AL USUARIO
+//-----------------------------------
+function loadFormularioLogin(){
+
+    let respuesta = Utils.siPrimeraVez()
+
+    let boton = document.querySelector("#registrarse")
+
+    if (respuesta==="S"){
+        // Cuando es la primera vez, se habilita la etiqueta "Registrarse", de lo contrario, los usuarios se deben 
+        //crear desde dentro de la aplicación
+        boton.style.display = "block"
+    }else{
+        boton.disabled = true
+    }
+
 }

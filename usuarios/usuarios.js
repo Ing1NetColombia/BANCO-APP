@@ -48,7 +48,7 @@ export default class Usuario {
    //---------------------
    //BORRAR USUARIO
    //---------------------
-   borrar(indice_array) {
+   static borrar(indice_array) {
        let usuarios = []
 
        if (localStorage.getItem("usuarios")) {
@@ -66,34 +66,36 @@ export default class Usuario {
    validarDatos(password_confirm) {
     
     if (!this.nombre){
-           alert("Por favor confirmar el nombre del usuario")
+        swal("Por favor confirmar el nombre del usuario")
            return false
        }
+     
+       if (this.password.length < 4){
+        swal("Password debe contener por lo menos 4 caracteres")
+        return false
+       }
        if (!this.password){
-           alert("Por favor verificar constraseña")
+        swal("Por favor verificar constraseña")
            return false
        }
        if (!password_confirm){
-        alert("Por favor verificar contraseña de confirmación")
+        swal("Por favor verificar contraseña de confirmación")
         return false
       }
-
-      if (!this.password === password_confirm) {
-        alert("Password no coincide")
-        return false
+      
+      if (this.password === password_confirm) {
+        //alert("SON IGUALES password: "+ this.password+ " --> password confirmacion:" + password_confirm)
+       }else{
+            swal("Password no coincide")
+            return false
        }
 
-    if (this.password.length < 4){
-        alert("Password debe contener por lo menos 4 caracteres")
-        return false
-    }
-
        if (!this.email){
-           alert("Por favor confirmar el correo electrónico del cliente")
+        swal("Por favor confirmar el correo electrónico del cliente")
            return false
        }else{
            if (!this.email.includes("@")){
-               alert("El correo electrónico no es válido")
+            swal("El correo electrónico no es válido")
                return false
            }
        }        
@@ -134,7 +136,7 @@ export default class Usuario {
    }
 
    //---------------------
-   //VALIDAR USUARIO Y CONTRASEÑA
+   //VALIDAR LA CONTRASEÑA DEL USUARIO
    //---------------------
    static usuarioValido(id, password){
         let usuarios = []

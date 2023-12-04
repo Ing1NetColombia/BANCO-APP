@@ -46,7 +46,7 @@ export default class Cliente {
     //---------------------
     //BORRAR CLIENTE
     //---------------------
-    borrarCliente(indice_array) {
+    static borrarCliente(indice_array) {
         let clientes = []
 
         if (localStorage.getItem("clientes")) {
@@ -63,27 +63,27 @@ export default class Cliente {
     //---------------------
     validarDatosCliente() {
         if (!this.nitCliente || parseInt(this.nitCliente)<=0){
-            alert("Por favor confirmar el nit del cliente")
+            swal("Por favor confirmar el nit del cliente")
             return false
         }
         if (!this.nombre){
-            alert("Por favor confirmar el nombre del cliente")
+            swal("Por favor confirmar el nombre del cliente")
             return false
         }
         if (!this.direcc){
-            alert("Por favor confirmar la dirección del cliente")
+            swal("Por favor confirmar la dirección del cliente")
             return false
         }
         if (!this.ciudad){
-            alert("Por favor confirmar la ciudad del cliente")
+            swal("Por favor confirmar la ciudad del cliente")
             return false
         }
         if (!this.email){
-            alert("Por favor confirmar el correo electrónico del cliente")
+            swal("Por favor confirmar el correo electrónico del cliente")
             return false
         }else{
             if (!this.email.includes("@")){
-                alert("El correo electrónico no es válido")
+                swal("El correo electrónico no es válido")
                 return false
             }
         }      

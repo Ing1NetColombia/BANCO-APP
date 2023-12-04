@@ -45,7 +45,7 @@ export default class Producto {
    //---------------------
    //BORRAR PRODUCTO
    //---------------------
-   borrarProducto(indice_array) {
+   static borrarProducto(indice_array) {
        let productos = []
 
        if (localStorage.getItem("productos")) {
@@ -62,19 +62,19 @@ export default class Producto {
    //---------------------
    validarDatosProductos() {
        if (!this.nitCliente){
-           alert("Por favor confirmar el nit del cliente")
+        swal("Por favor confirmar el nit del cliente")
            return false
        }
        if (!this.idProducto){
-           alert("Por favor confirmar el código del producto")
+        swal("Por favor confirmar el código del producto")
            return false
        }
        if (!this.tipoProducto){
-           alert("Por favor confirmar el tipo de producto")
+        swal("Por favor confirmar el tipo de producto")
            return false
        }
        if (!this.numeroProducto){
-           alert("Por favor confirmar el número del producto")
+        swal("Por favor confirmar el número del producto")
            return false
        }
        // Datos correctos

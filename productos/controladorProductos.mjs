@@ -1,6 +1,7 @@
 import Producto from "./productos.js";
 import Cliente from "../clientes/clientes.js";
 import tipoProducto from "../tiposProducto/tiposProducto.js";
+import Utils from "../utils/utils.js";
 
 
 //Variables:
@@ -34,18 +35,18 @@ if (btnRegistrarProducto){
 
             //validar idProducto único (PK)
             if (objProducto.idProductoExiste(nitCliente, idProducto)){
-                alert("Este Id de Producto ya existe para este Cliente, no se aceptan repetidos")
+                swal("Este Id de Producto ya existe para este Cliente, no se aceptan repetidos")
                 return false
             }            
 
             if (objProducto.numeroProductoExiste(numeroProducto)){
-                alert("Este número de Producto ya existe en el Banco, debe ser único")
+                swal("Este número de Producto ya existe en el Banco, debe ser único")
                 return false
             }            
 
             //Guardar en el almacenamiento:
             objProducto.crearProducto()
-            alert("Producto ha sido creado")
+            swal("Producto creado")
             //refrescar grilla:    
             grillaProductos("A","")
             //limpiar formulario:
@@ -80,7 +81,7 @@ if (btnModificarProducto){
 
             //Guardar en el almacenamiento:
             objProducto.guardaEditarProducto(mPosicionEditar)
-            alert("Cambios han sido guardados")
+            swal("Cambios guardados")
             //refrescar grilla:    
             grillaProductos("A","")
             //limpiar formulario:
@@ -332,11 +333,10 @@ function clickBorrarProductos(){
 
         //validar integridad referencial del cliente:
         if (Producto.idProductoDependencias(a_producto[0].nitCliente, a_producto[0].idProducto)){
-            alert("Este producto tiene movimientos asociados.  No puede borrarse.")
+            swal("Este producto tiene movimientos asociados.  No puede borrarse.")
         }else{
             //Borrar del almacenamiento:
-            let objProducto = new Producto(0,"","","","")
-            objProducto.borrarProducto(indiceFila)
+            Producto.borrarProducto(indiceFila)
             //Refrescar grilla:
             grillaProductos("A","")
         }
@@ -442,8 +442,7 @@ let btnSelecTipoProducto = document.getElementById('selectTipoProducto')
 btnSelecTipoProducto.addEventListener("change", function(evento){
     evento.preventDefault();
   
-    //Leer tipo producto seleccionado en el select:
-    //const btnSelect = document.getElementById("selectClientesMov")
+    //Tomar tipo producto seleccionado en el select:
     let tipoProductoSeleccion = this.value
 
     //Input tipo producto destino para asignar el tipo producto seleccionado:

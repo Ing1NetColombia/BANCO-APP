@@ -1,8 +1,10 @@
 import Usuario from "./usuarios.js";
+import Utils from "../utils/utils.js";
 
 //Variables:
 //Indice elemento a modificar:
 var mPosicionEditar = 0
+var esPrimeraVez = Utils.siPrimeraVez()
 
 //MOSTRAR DATOS GRILLA AL CARGAR LA PAGINA
 document.onload = grillaUsuarios()
@@ -25,14 +27,19 @@ btnRegistrar.addEventListener("click", function(evento){
     if (objUsuario.validarDatos(password2)){
         //Guardar en el almacenamiento:
         objUsuario.crear()
-        alert("Usuario ha sido creado")
-        //refrescar grilla:    
-        grillaUsuarios()
-        //limpiar formulario:
-        limpiarForm()
+        swal("Usuario creado")
 
-        //Actualizar estado de botones Agregar y Modificar:
-        estadoBotones("AGREGAR")
+        if (esPrimeraVez ==="S"){
+            // Cuando es la primera vez, solo se permite crear el primer usuario y se cierra el formulario
+            window.location.href = "./frmLogin.html"
+        }else{
+            //limpiar formulario:
+            limpiarForm()
+            //Actualizar estado de botones Agregar y Modificar:
+            estadoBotones("AGREGAR")
+            //Cuando no es la primera vez, mostrar la grilla con los usuarios creados:
+            grillaUsuarios()
+        }
     }
     
 })
@@ -56,7 +63,7 @@ btnModificar.addEventListener("click", function(evento){
     if (objUsuario.validarDatos(password2)){
         //Guardar en el almacenamiento:
         objUsuario.guardaEditar(mPosicionEditar)
-        alert("Cambios han sido guardados")
+        swal("Cambios guardados")
         //refrescar grilla:    
         grillaUsuarios()
         //limpiar formulario:
@@ -140,11 +147,28 @@ function grillaUsuarios(disabledBotones){
     //si el valor es "A" se Activan los botones Editar y Borrar
     //si el valor es "I" se Inactivan los botones Editar y Borrar
 
+    let div_tabla = document.querySelector("#div_tabla")
+    let linkSalir = document.querySelector("#imagenSalir")
+    let spanSalir = document.querySelector("#spanSalir")
+
+    if (esPrimeraVez==="S"){
+        // Cuando es la primera vez, NO se muestran los datos en la grilla
+        div_tabla.style.display="none"
+        //Ocultar el icono de salir (superior-derecha)
+        linkSalir.style.display="none"
+        spanSalir.style.display="none"
+        return
+    }else{
+        // Cuando NO es la primera vez, se muestran los datos en la grilla
+        div_tabla.style.display="block"
+        //Mostrar el icono de salir (superior-derecha)
+        linkSalir.style.display="block"
+        spanSalir.style.display="block"
+    }
+
     let a_usuarios =[]
 
     a_usuarios = Usuario.obtenerDatos()
-
-    let div_tabla = document.querySelector("#div_tabla")
 
     //activar o inactivar los botones Editar y Borrar según parámetro recibido:
     let htmlDisabledBotones = ""
@@ -153,11 +177,6 @@ function grillaUsuarios(disabledBotones){
         htmlDisabledBotones = " disabled= true "
     }
     
-    if (a_usuarios.length){
-
-        //mostrar div de tabla:
-        div_tabla.style.display="block"
-
         //Llenar String con contenido HTML para asignar a la etiqueta
         let cadenaHtml = ""
         a_usuarios.forEach(function(element, index) {
@@ -182,12 +201,6 @@ function grillaUsuarios(disabledBotones){
         //Crear los eventos CLICK de los botones EDITAR Y BORRAR de la grilla
         clickEditar()
         clickBorrar()
-
-    } else {
-
-        // Cuando no hay usuarios, se oculta la grilla para simular el registro por primera vez
-        div_tabla.style.display = "none"
-    }
 }
 
 //---------------------
@@ -222,12 +235,40 @@ function clickBorrar(){
     const a_bot_borrar = document.querySelectorAll(".btnGridBorrar")
 
     a_bot_borrar.forEach((elemento, indice) => elemento.addEventListener("click", function(evento) {
-        //Borrar del almacenamiento:
-        let objUsuario = new Usuario(0,"","","")
-        objUsuario.borrar(indice)
-        //Refrescar grilla:
-        grillaUsuarios()
+
+            //Borrar del almacenamiento:
+            Usuario.borrar(indice)
+            //Refrescar grilla:
+            grillaUsuarios()    
     }))
     
 }
+
+//---------------------
+//EVENTO CLICK DE LA IMAGEN DE MOSTRAR/OCULTAR INPUT PASSWORD
+//---------------------
+let btnImagenPassword = document.getElementById('passwordImagen')
+btnImagenPassword.addEventListener("click", function(evento){
+    evento.preventDefault();
+
+    //etiqueta input:
+    let inputPassword = document.getElementById("password")
+
+    //ejecutar cambio de estado:
+    Utils.estadoPassword(this, inputPassword)       
+})
+
+//---------------------
+//EVENTO CLICK DE LA IMAGEN DE MOSTRAR/OCULTAR INPUT CONFIRM_PASSWORD
+//---------------------
+let btnImagenConfirmPassword = document.getElementById('confirm_passwordImagen')
+btnImagenConfirmPassword.addEventListener("click", function(evento){
+    evento.preventDefault();
+
+    //etiqueta input:
+    let inputPassword = document.getElementById("confirm_password")
+
+    //ejecutar cambio de estado:
+    Utils.estadoPassword(this, inputPassword)       
+})
 

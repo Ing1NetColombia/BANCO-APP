@@ -1,5 +1,6 @@
 import tipoProducto from "../tiposProducto/tiposProducto.js";
 import TipoProducto from "../tiposProducto/tiposProducto.js";
+import Utils from "../utils/utils.js";
 
 //Variables:
 //Indice elemento a modificar:
@@ -27,13 +28,13 @@ if (btnRegistrarTipoProducto){
 
             //validar tipoProducto único (PK)
             if (objTipoProducto.tipoProductoExiste(tipoProducto)){
-                alert("Este código de Tipo Producto ya existe, no se aceptan repetidos")
+                swal("Este código de Tipo Producto ya existe, no se aceptan repetidos")
                 return false
             }
 
             //Guardar en el almacenamiento:
             objTipoProducto.crearTipoProducto()
-            alert("Tipo de Producto ha sido creado")
+            swal("Tipo de Producto creado")
             //refrescar grilla:    
             grillaTipoProductos()
             //limpiar formulario:
@@ -64,7 +65,7 @@ if (btnModificarTipoProducto){
         if (objTipoProducto.validarDatosTipoProducto()){
             //Guardar en el almacenamiento:
             objTipoProducto.guardaEditarTipoProducto(mPosicionEditar)
-            alert("Cambios han sido guardados")
+            swal("Cambios guardados")
             //refrescar grilla:    
             grillaTipoProductos()
             //limpiar formulario:
@@ -73,7 +74,6 @@ if (btnModificarTipoProducto){
             //Actualizar estado de botones Agregar y Modificar:
             estadoBotonesTipoProductos("AGREGAR")
         }
-    
     })    
 }
 
@@ -92,8 +92,7 @@ if (btnCancelar){
     
         //Actualizar estado de botones Agregar y Modificar:
         estadoBotonesTipoProductos("AGREGAR")
-        }
-    
+        }  
     )    
 }
 
@@ -194,7 +193,6 @@ function grillaTipoProductos(disabledBotones){
         //Crear los eventos CLICK de los botones EDITAR Y BORRAR de la grilla
         clickEditarTipoProductos()
         clickBorrarTipoProductos()
-    
     }
 }
 
@@ -233,11 +231,10 @@ function clickBorrarTipoProductos(){
 
         //validar integridad referencial del tipo de producto:
         if (TipoProducto.tipoProductoDependencias(a_tipoProducto[0].tipoProducto)){
-            alert("Este tipo de producto tiene productos asociados.  No puede borrarse.")
+            swal("Este Tipo de Producto tiene productos asociados.  No puede borrarse.")
         }else{
             //Borrar del almacenamiento:
-            let objTipoProducto = new TipoProducto(0,"","","","")
-            objTipoProducto.borrarTipoProducto(indice)
+            TipoProducto.borrarTipoProducto(indice)
             //Refrescar grilla:
             grillaTipoProductos()
         }

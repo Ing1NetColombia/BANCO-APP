@@ -49,7 +49,7 @@ export default class Movimiento {
       //---------------------
       //BORRAR MOVIMIENTO
       //---------------------
-      borrar(indice_array) {
+      static borrar(indice_array) {
           let movimientos = []
    
           if (localStorage.getItem("movimientos")) {
@@ -77,31 +77,27 @@ export default class Movimiento {
           }
 
           if (!this.nitCliente){
-              alert("Por favor confirmar el nit del cliente")
+            swal("Por favor confirmar el nit del cliente")
               return false
           }
           if (!this.idProducto){
-              alert("Por favor confirmar el código del producto")
-              return false
-          }
-          if (!this.fechaMovim){
-              alert("Por favor confirmar la fecha del movimiento")
+            swal("Por favor confirmar el código del producto")
               return false
           }
           if (!this.documento){
-              alert("Por favor confirmar el documento")
+            swal("Por favor confirmar el documento")
               return false
           }
           if (mVrEntrada<0 || mVrSalida<0){
-            alert("Por favor verifique valor negativo de la entrada o salida")
+            swal("Por favor verifique valor negativo de la entrada o salida")
             return false
           }
           if (mVrEntrada===0 && mVrSalida===0) {
-            alert("No se acepta movimiento con valor de entrada o salida en cero")
+            swal("No se acepta movimiento con valor de entrada o salida en cero")
             return false
           }
           if (mVrEntrada>0 && mVrSalida>0) {
-            alert("No se acepta movimiento con valor de entrada o salida al mismo tiempo")
+            swal("No se acepta movimiento con valor de entrada o salida al mismo tiempo")
             return false
           }
 

@@ -20,17 +20,17 @@
 
 <body style="height: 100vh;">
     <!-- Titulo: -->
-    <div class="row bg-primary">
-        <div class="col-1">
-            <img class="" style="width: 80px ; height: auto;" src="../assets/imgs/banco_logo.png" alt="">
+    <div class="d-flex row bg-primary col-12">
+        <div class="col-2">
+            <img style="width: 80px ; height: auto;" src="../assets/imgs/banco_logo.png" alt="">
         </div>
-        <div class="col-10">
+        <div class="col-9">
             <span class="fs-1" style="color: white;">Clientes</span>
         </div>
         <div class="col-1 d-flex flex-column justify-content-center flex-row align-items-center">
-            <a href="../principal/frmPrincipal.html">
+            <a href="../principal/frmPrincipal.html" class="d-flex justify-content-center align-items-center">
                 <i class="material-icons">&#xe879;</i>
-                <span">Salir</span>
+                <span class="ms-1">Salir</span>
             </a>            
         </div>
     </div>
@@ -91,5 +91,7 @@
     </div>
 
     <script type="module" src="controladorClientes.mjs"></script>
+    <!-- Sweet alert: https://sweetalert.js.org/guides/ -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script></body>
 </body>
 </html>
